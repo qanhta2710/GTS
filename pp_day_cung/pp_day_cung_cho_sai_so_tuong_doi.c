@@ -5,7 +5,6 @@ double f(double x) {
     return pow(x, 5) - 3 * pow(x, 3) + 2 * pow(x, 2) - x + 5; // Nhap phuong trinh f(x)
 }
 
-// CAM DONG VAO DAY
 void printSolution(double (*f)(double), double xk, double d, double m1, double M1, double relative_error) {
     int k = 1;
     double tmp;

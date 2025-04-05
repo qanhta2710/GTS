@@ -2,18 +2,16 @@
 #include <math.h>
 #define e 2.718281828459045
 
+// Can bac ba dung ham cbrt(), can bac hai dung ham sqrt()
+
 double phi(double x) {
-    return log(10*x-7); // can bac ba dung cbrt(), can bac hai dung sqrt()
+    return log(10*x-7); // Nhap ham phi(x)
 }
 
 void printSolution(double (*phi)(double), double xk, double q, double epsilon) {
     double tmp = xk;
     int k = 0;
-
-
     printf("%3s %15s %15s\n", "k", "xk", "|xk - tmp|");
-
-
     if (fabs(phi(xk) - xk) <= epsilon * (1 - q) / q) {
         printf("%3d %15.9lf %15.9lf\n", k, xk, 0.0);
         return;

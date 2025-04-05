@@ -6,10 +6,9 @@ double f(double x) {
 }
 
 double f_derivative(double x) {
-    return 5 * pow(x, 4) - 9 * pow(x, 2) + 4 * x - 1; // Nhap dao ham cua f(x)
+    return 5 * pow(x, 4) - 9 * pow(x, 2) + 4 * x - 1; // Nhap f'(x)
 }
 
-// CAM DONG VAO DAY
 void printSolution(double (*f)(double), double xk, double m1, double M2, double relative_error) {
     int k = 1;
     double tmp;

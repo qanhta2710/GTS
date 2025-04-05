@@ -6,10 +6,10 @@ double f(double x) {
 }
 
 double f_derivative(double x) {
-    return 4 * pow(x, 3); // Nhap dao ham cua f(x)
+    return 4 * pow(x, 3); // Nhap f'(x)
 }
 
-// CAM DONG VAO DAY
+
 void printSolution(double (*f)(double), double (*f_derivative)(double), double xk, double m1, double M2, int n) {
     int i = 0;
     double tmp = 0;
@@ -25,8 +25,8 @@ void printSolution(double (*f)(double), double (*f_derivative)(double), double x
 int main() {
     double x0 = 3; // Nhap diem khoi tao x0
     int n = 5; // Nhap so lan lap
-    double m1 = 32; // m1 = min(f'(x))
-    double M2 = 108; // M2 = max(f''(x))
+    double m1 = 32; // m1 = min(|f'(x)|)
+    double M2 = 108; // M2 = max(|f''(x)|)
     printSolution(f, f_derivative, x0, m1, M2, n);
     return 0;
 }

@@ -6,14 +6,14 @@ double f(double x) {
 }
 
 double f_derivative(double x) {
-    return 5 * pow(x, 4); // Nhap dao ham cua f(x)
+    return 5 * pow(x, 4); // Nhap f'(x)
 }
 
-// CAM DONG VAO DAY
+
 void printSolution(double (*f)(double), double xk, double m1, double M2, double epsilon) {
     int k = 1;
     double tmp;
-    double tolerance = epsilon; // Tolerance for stopping condition based on consecutive approximations
+    double tolerance = epsilon; 
     printf("%3s %15s %15s %15s\n", "k", "xk", "|f(xk)|", "|xk - xk-1|");
     printf("%3d %15.9lf %15.9lf %15s\n", 0, xk, fabs(f(xk)), "-");
 
@@ -31,7 +31,7 @@ void printSolution(double (*f)(double), double xk, double m1, double M2, double 
 
 int main() {
     double x0 = 2; // Nhap diem khoi tao x0
-    double epsilon = 0.5 * pow(10, -5); // Nhap sai so
+    double epsilon = 0.5 * pow(10, -5); // Nhap sai so epsilon
     double m1 = 5; // m1 = min(|f'(x)|)
     double M2 = 160; // M2 = max(|f''(x)|)
     printSolution(f, x0, m1, M2, epsilon);

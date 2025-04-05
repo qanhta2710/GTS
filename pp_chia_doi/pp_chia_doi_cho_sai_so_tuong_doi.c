@@ -5,7 +5,6 @@ double func(double x) {
     return pow(x, 5) - 3 * pow(x, 3) + 2 * pow(x, 2) - x + 5; // Nhap phuong trinh f(x)
 }
 
-// CAM DONG VAO DAY
 void printSolution(double (*func)(double), double a, double b, double relativeError) {
     int i = 0;
     printf("%3s %15s %15s %15s %15s %15s\n", "i", "a", "b", "c", "f(c)", "Error");
@@ -31,9 +30,11 @@ void printSolution(double (*func)(double), double a, double b, double relativeEr
     }
 }
 int main() {
-    double a = -2.5; // Nhap khoang cach li a
-    double b = -2; // Nhap khoang cach li b
-    double relativeError = 0.05 / 100; // Nhap sai so tuong doi
+    // Nhap khoang cach li (a, b)
+    double a = -2.5; 
+    double b = -2; 
+    // Nhap sai so tuong doi
+    double relativeError = 0.05 / 100; 
     printSolution(func, a, b, relativeError);
     return 0;
 }
