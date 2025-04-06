@@ -139,5 +139,4 @@ void find_intervals(double extrema[], int count, double R) {
     }
     // Khoảng từ cực trị cuối cùng đến R
     printf("(%.7f, %.7f)\n", extrema[count - 1], R);
-
 }
