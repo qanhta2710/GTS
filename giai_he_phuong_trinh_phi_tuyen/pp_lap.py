@@ -1,50 +1,70 @@
 import numpy as np
 
-# Định nghĩa hệ phương trình dưới dạng hàm g(x)
-def g(x):
-    x1, x2 = x
-    # Ví dụ hệ phương trình:
-    # x1 = cos(x2)
-    # x2 = sin(x1)
-    g1 = np.cos(x2)
-    g2 = np.sin(x1)
-    return np.array([g1, g2])
+# Các hàm f1, f2, f3 tương ứng với các phương trình trong hệ
+def f1(x2, x3):
+    return (13 - x2**2 + 4 * x3) / 15
 
-# Hàm giải bằng phương pháp lặp đơn với epsilon
-def fixed_point_iteration(x0, epsilon):
-    """
-    x0: Nghiệm ban đầu (mảng numpy)
-    epsilon: Sai số chấp nhận được
-    """
-    x = np.array(x0, dtype=float)
-    iteration = 0
+def f2(x1, x3):
+    return (11 + x3 - x1**2) / 10
+
+def f3(x2):
+    return (22 + x2**3) / 25
+
+# Hàm tính ma trận Jacobian
+def jacobian(x1, x2, x3):
+    df1_dx1 = 0
+    df1_dx2 = -2 * x2 / 15
+    df1_dx3 = 4 / 15
+
+    df2_dx1 = -2 * x1 / 10
+    df2_dx2 = 0
+    df2_dx3 = 1 / 10
+
+    df3_dx1 = 0
+    df3_dx2 = 3 * x2**2 / 25
+    df3_dx3 = 0
+
+    J = np.array([[df1_dx1, df1_dx2, df1_dx3],
+                  [df2_dx1, df2_dx2, df2_dx3],
+                  [df3_dx1, df3_dx2, df3_dx3]])
+    return J
+
+# Hàm tính chuẩn vô cùng của ma trận Jacobian
+def max_norm(J):
+    return np.max(np.sum(np.abs(J), axis=1))
+
+# Hàm thực hiện lặp và in kết quả
+def iterate_system(eps, q):
+    # Khởi tạo giá trị ban đầu
+    x1, x2, x3 = 1.0, 1.0, 0.5
+
+    # Tính giá trị điều kiện dừng
+    stop_condition = eps * (1 - q) / q
     
+    print(f"{'i':<6}{'x1':>15}{'x2':>15}{'x3':>15}{'Sai so':>15}")
+    print(f"{0:<6}{x1:>15.8f}{x2:>15.8f}{x3:>15.8f}{0:>15.8f}")
+
+    iteration = 1
     while True:
-        x_new = g(x)
-        # Tính sai số
-        error = np.max(np.abs(x_new - x))
-        
-        print(f"Lan lap {iteration}: x = {x_new}, sai so = {error}")
-        
-        # Kiểm tra điều kiện hội tụ
-        if error < epsilon:
-            print(f"Da hoi tu sau {iteration + 1} lan lap")
-            return x_new
-        
-        x = x_new
-        iteration += 1
-        
-        # Thêm điều kiện dừng an toàn (tránh vòng lặp vô hạn)
-# Chương trình chính
-def main():
-    # Giá trị ban đầu
-    x0 = np.array([0.5, 0.5])  # Có thể thay đổi giá trị khởi đầu
-    epsilon = 1e-6  # Sai số mong muốn
-    
-    # Gọi hàm giải
-    solution = fixed_point_iteration(x0, epsilon)
-    
-    print("\nNghiem can tim:", solution)
+        # Tính các giá trị mới từ các hàm f1, f2, f3
+        x1_new = f1(x2, x3)
+        x2_new = f2(x1, x3)
+        x3_new = f3(x2)
 
-if __name__ == "__main__":
-    main()
+        # Tính sai số
+        error = max(abs(x1_new - x1), abs(x2_new - x2), abs(x3_new - x3))
+
+        # In ra giá trị của x1, x2, x3 và sai số tại bước lặp hiện tại
+        print(f"{iteration:<6}{x1_new:>15.9f}{x2_new:>15.9f}{x3_new:>15.9f}{error:>20.9e}")
+
+        # Kiểm tra điều kiện dừng
+        if error < stop_condition:
+            print(f"\nSai so {error:.9e} sau {iteration} buoc lap.")
+            break
+
+        # Cập nhật giá trị cho bước lặp tiếp theo
+        x1, x2, x3 = x1_new, x2_new, x3_new
+        iteration += 1
+
+# Nhập giá trị eps và q
+iterate_system(eps=0.5e-6, q=7.0/15.0)
