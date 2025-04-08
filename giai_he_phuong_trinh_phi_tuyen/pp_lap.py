@@ -41,23 +41,18 @@ def iterate_system(eps, q):
 
     iteration = 1
     while True:
-        # Tính các giá trị mới từ các hàm f1, f2, f3
         x1_new = f1(x2, x3)
         x2_new = f2(x1, x3)
         x3_new = f3(x2)
 
-        # Tính sai số
         error = max(abs(x1_new - x1), abs(x2_new - x2), abs(x3_new - x3))
 
-        # In ra giá trị của x1, x2, x3 và sai số tại bước lặp hiện tại
         print(f"{iteration:<6}{x1_new:>15.9f}{x2_new:>15.9f}{x3_new:>15.9f}{error:>20.9e}")
 
-        # Kiểm tra điều kiện dừng
         if error < stop_condition:
             print(f"\nSai so {error:.9e} sau {iteration} buoc lap.")
             break
 
-        # Cập nhật giá trị cho bước lặp tiếp theo
         x1, x2, x3 = x1_new, x2_new, x3_new
         iteration += 1
 
