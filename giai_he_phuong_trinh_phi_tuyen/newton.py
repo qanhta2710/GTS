@@ -35,18 +35,16 @@ def newton_method(eps):
     x = np.array([1.0, 1.0, 0.5])  # [x1, x2, x3]
 
     print(f"{'i':<6}{'x1':>15}{'x2':>15}{'x3':>15}{'Sai so':>15}")
-    print(f"{0:<6}{x[0]:>15.8f}{x[1]:>15.8f}{x[2]:>15.8f}{0:>15.8f}")
+    print(f"{0:<6}{x[0]:>15.9f}{x[1]:>15.9f}{x[2]:>15.9f}{0:>20.9e}")
 
     iteration = 1
     while True:
-        # Tính giá trị của các phương trình tại x
         F = np.array([
             f1(x[0], x[1], x[2]),
             f2(x[0], x[1], x[2]),
             f3(x[0], x[1], x[2])
         ])
 
-        # Tính ma trận Jacobian tại x
         J = jacobian(x[0], x[1], x[2])
 
         # Giải hệ phương trình J * delta_x = -F để tìm delta_x
@@ -59,11 +57,11 @@ def newton_method(eps):
         error = np.linalg.norm(delta_x, ord=np.inf)
 
         # In ra giá trị của x và sai số tại bước lặp hiện tại
-        print(f"{iteration:<6}{x_new[0]:>15.8f}{x_new[1]:>15.8f}{x_new[2]:>15.8f}{error:>15.8f}")
+        print(f"{iteration:<6}{x_new[0]:>15.9f}{x_new[1]:>15.9f}{x_new[2]:>15.9f}{error:>20.9e}")
 
         # Kiểm tra điều kiện dừng
         if error < eps:
-            print(f"\nĐiều kiện dừng đã thỏa mãn với sai số {error:.8f} sau {iteration} bước lặp.")
+            print(f"\nSai so: {error:.9e}")
             break
 
         # Cập nhật giá trị cho bước lặp tiếp theo
