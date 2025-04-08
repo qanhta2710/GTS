@@ -1,6 +1,6 @@
 import numpy as np
 
-# Các hàm f1, f2, f3 tương ứng với các phương trình trong hệ
+# Nhập các hàm f1, f2, f3 tương ứng với các phương trình trong hệ
 def f1(x2, x3):
     return (13 - x2**2 + 4 * x3) / 15
 
@@ -10,7 +10,7 @@ def f2(x1, x3):
 def f3(x2):
     return (22 + x2**3) / 25
 
-# Hàm tính ma trận Jacobian
+# Nhập ma trận Jacobi 
 def jacobian(x1, x2, x3):
     df1_dx1 = 0
     df1_dx2 = -2 * x2 / 15
@@ -29,16 +29,11 @@ def jacobian(x1, x2, x3):
                   [df3_dx1, df3_dx2, df3_dx3]])
     return J
 
-# Hàm tính chuẩn vô cùng của ma trận Jacobian
-def max_norm(J):
-    return np.max(np.sum(np.abs(J), axis=1))
-
-# Hàm thực hiện lặp và in kết quả
 def iterate_system(eps, q):
-    # Khởi tạo giá trị ban đầu
+    # Nhập giá trị ban đầu
     x1, x2, x3 = 1.0, 1.0, 0.5
 
-    # Tính giá trị điều kiện dừng
+    # Điều kiện dừng
     stop_condition = eps * (1 - q) / q
     
     print(f"{'i':<6}{'x1':>15}{'x2':>15}{'x3':>15}{'Sai so':>15}")

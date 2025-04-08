@@ -6,7 +6,8 @@ double func(double x) {
 }
 
 void printSolution(double (*func)(double), double a, double b, double epsilon) {
-    int n = log((b - a) / epsilon) + 1;
+    int n = ceil(log2(fabs(b - a) / epsilon)); 
+    printf("So lan lap: %d\n", n);
     printf("%3s %15s %15s %15s %15s\n", "n", "a", "b", "c", "f(c)");
     double c = (a + b) / 2; 
     double z = func(c);
