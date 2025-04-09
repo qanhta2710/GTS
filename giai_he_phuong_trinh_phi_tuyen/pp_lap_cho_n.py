@@ -32,7 +32,7 @@ def jacobian(x1, x2, x3):
 def iterate_system(n):
     # Nhập giá trị ban đầu
     x1, x2, x3 = 1.0, 1.0, 0.5
-   
+    
     print(f"{'i':<6}{'x1':>15}{'x2':>15}{'x3':>15}{'Sai so':>15}")
     print(f"{0:<6}{x1:>15.8f}{x2:>15.8f}{x3:>15.8f}{0:>15.8f}")    
 
@@ -47,5 +47,6 @@ def iterate_system(n):
 
         x1, x2, x3 = x1_new, x2_new, x3_new
     print(f"\nSai so {error:.9e} sau {iteration} buoc lap.")
-# Nhập giá trị eps và q
+
+# Nhập giá trị n
 iterate_system(n = 10)
