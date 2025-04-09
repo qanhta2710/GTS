@@ -1,13 +1,13 @@
 import numpy as np
 
 # Nhập các hàm f1, f2, f3 tương ứng với các phương trình trong hệ
-def f1(x2, x3):
+def f1(x1, x2, x3):
     return (13 - x2**2 + 4 * x3) / 15
 
-def f2(x1, x3):
+def f2(x1, x2, x3):
     return (11 + x3 - x1**2) / 10
 
-def f3(x2):
+def f3(x1, x2, x3):
     return (22 + x2**3) / 25
 
 # Nhập ma trận Jacobi 
@@ -41,9 +41,9 @@ def iterate_system(eps, q):
 
     iteration = 1
     while True:
-        x1_new = f1(x2, x3)
-        x2_new = f2(x1, x3)
-        x3_new = f3(x2)
+        x1_new = f1(x1, x2, x3)
+        x2_new = f2(x1, x2, x3)
+        x3_new = f3(x1, x2, x3)
 
         error = max(abs(x1_new - x1), abs(x2_new - x2), abs(x3_new - x3))
 

@@ -29,13 +29,21 @@ def jacobian(x1, x2, x3):
                   [df3_dx1, df3_dx2, df3_dx3]])
     return J
 
-def newton_method(eps):
+def newton_modified_method(eps):
     # Khởi tạo giá trị ban đầu
     x = np.array([1.0, 1.0, 0.5]) 
 
     print(f"{'i':<6}{'x1':>15}{'x2':>15}{'x3':>15}{'Sai so':>15}")
     print(f"{0:<6}{x[0]:>15.9f}{x[1]:>15.9f}{x[2]:>15.9f}{0:>20.9e}")
+    J = jacobian(x[0], x[1], x[2])
 
+    det_J = np.linalg.det(J)
+    if abs(det_J) < 1e-10:
+        print("Ma tran Jacobi suy bien")
+        return
+    
+    J_inv = np.linalg.inv(J)
+    
     iteration = 1
     while True:
         F = np.array([
@@ -44,18 +52,10 @@ def newton_method(eps):
             f3(x[0], x[1], x[2])
         ])
 
-        J = jacobian(x[0], x[1], x[2])
-
-        det_J = np.linalg.det(J)
-        if abs(det_J) < 1e-10:
-            print("Ma tran Jacobi suy bien")
-            break
-
-        delta_x = np.linalg.solve(J, -F)
+        delta_x = np.dot(J_inv, -F)
 
         x_new = x + delta_x
 
-        # Tính sai số
         error = np.linalg.norm(delta_x, ord=np.inf)
 
         print(f"{iteration:<6}{x_new[0]:>15.9f}{x_new[1]:>15.9f}{x_new[2]:>15.9f}{error:>20.9e}")
@@ -69,4 +69,4 @@ def newton_method(eps):
         iteration += 1
 
 # Gọi hàm với giá trị epsilon
-newton_method(eps=0.5e-6)
+newton_modified_method(eps=0.5e-6)
