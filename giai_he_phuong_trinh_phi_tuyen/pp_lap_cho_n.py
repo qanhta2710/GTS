@@ -29,9 +29,31 @@ def jacobian(x1, x2, x3):
                   [df3_dx1, df3_dx2, df3_dx3]])
     return J
 
+# Hàm kiểm tra điều kiện hội tụ
+def check_convergence(x1, x2, x3):
+    J = jacobian(x1, x2, x3)
+
+    # Tính chuẩn hàng (q)
+    q = np.max(np.sum(np.abs(J), axis=1))
+
+    print(f"Chuan hang (q): {q:.6f}")
+
+    # Kiểm tra điều kiện hội tụ
+    if q < 1:
+        print("Thoa man dieu kien hoi tu.")
+        return True, q
+    else:
+        print("Khong thoa man dieu kien hoi tu.")
+        return False, q
+
 def iterate_system(n):
     # Nhập giá trị ban đầu
     x1, x2, x3 = 1.0, 1.0, 0.5
+    
+    # Kiểm tra điều kiện hội tụ
+    is_convergent, q = check_convergence(x1, x2, x3)
+    if not is_convergent:
+        return
     
     print(f"{'i':<6}{'x1':>15}{'x2':>15}{'x3':>15}{'Sai so':>15}")
     print(f"{0:<6}{x1:>15.8f}{x2:>15.8f}{x3:>15.8f}{0:>15.8f}")    

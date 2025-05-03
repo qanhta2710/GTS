@@ -47,7 +47,7 @@ def check_convergence(x1, x2, x3):
         return False, q
 
 # Hàm lặp giải hệ phương trình phi tuyến
-def iterate_system(eps):
+def iterate_system(relative_error):
     # Nhập giá trị ban đầu
     x1, x2, x3 = 1.0, 1.0, 0.5
 
@@ -65,13 +65,16 @@ def iterate_system(eps):
         x2_new = f2(x1, x2, x3)
         x3_new = f3(x1, x2, x3)
 
-        # Tính sai số tuyệt đối
+        # Tính sai số tương đối
+        error_x1 = abs(x1_new - x1) / abs(x1_new) if x1_new != 0 else float('inf')
+        error_x2 = abs(x2_new - x2) / abs(x2_new) if x2_new != 0 else float('inf')
+        error_x3 = abs(x3_new - x3) / abs(x3_new) if x3_new != 0 else float('inf')
 
-        error = max(abs(x1_new - x1), abs(x2_new - x2), abs(x3_new - x3))
+        error = max(error_x1, error_x2, error_x3)
 
         print(f"{iteration:<6}{x1_new:>15.9f}{x2_new:>15.9f}{x3_new:>15.9f}{error:>20.9e}")
 
-        if error < eps:
+        if error < relative_error:
             print(f"\nSai so {error:.9e} sau {iteration} buoc lap.")
             break
 
@@ -79,4 +82,4 @@ def iterate_system(eps):
         iteration += 1
 
 # Nhập giá trị sai số tương đối
-iterate_system(eps = 0.5e-10)
+iterate_system(relative_error=0.05/100)
