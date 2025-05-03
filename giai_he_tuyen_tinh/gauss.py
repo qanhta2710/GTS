@@ -1,7 +1,20 @@
 import numpy as np
-
-import numpy as np
 from sympy import Matrix, symbols, solve_linear_system
+
+def read_matrix_from_file(filename):
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+
+    # Tìm vị trí dòng phân cách "---"
+    separator_index = lines.index('---\n')
+
+    # Đọc ma trận A
+    A = np.array([list(map(float, line.split())) for line in lines[:separator_index]])
+
+    # Đọc vector b
+    b = np.array([float(line.strip()) for line in lines[separator_index + 1:]])
+
+    return A, b
 
 def gauss_elimination_check(A, b, tol=1e-10):
     A = np.array(A, dtype=float)
@@ -10,20 +23,32 @@ def gauss_elimination_check(A, b, tol=1e-10):
     Ab = np.hstack([A, b])  # Ma trận mở rộng
     pivot_columns = []
 
+    print("Ma trận mở rộng ban đầu:")
+    print(Ab)
+    print("-" * 50)
+
     for i in range(min(m, n)):
+        # Kiểm tra và hoán đổi hàng nếu cần
         if abs(Ab[i, i]) < tol:
             for t in range(i + 1, m):
                 if abs(Ab[t, i]) > tol:
                     Ab[[i, t]] = Ab[[t, i]]
+                    print(f"Hoán đổi hàng {i} và hàng {t}:")
                     print(Ab)
+                    print("-" * 50)
                     break
         if abs(Ab[i, i]) < tol:
             continue
+
         pivot_columns.append(i)
+
+        # Khử các phần tử bên dưới phần tử chốt
         for j in range(i + 1, m):
             factor = Ab[j, i] / Ab[i, i]
             Ab[j, i:] -= factor * Ab[i, i:]
-        print(Ab)
+            print(f"Khử hàng {j} bằng hàng {i} với hệ số {factor:.6f}:")
+            print(Ab)
+            print("-" * 50)
 
     # Kiểm tra vô nghiệm
     for i in range(m):
@@ -59,14 +84,14 @@ def gauss_elimination_check(A, b, tol=1e-10):
             "Ab": Ab
         }
 
-        # Hệ có nghiệm duy nhất → giải bằng thế ngược
+    # Hệ có nghiệm duy nhất → giải bằng thế ngược
     x = np.zeros(n)
     print("Back substitution steps:")
     for i in reversed(range(len(pivot_columns))):
         row = pivot_columns[i]
         s = np.dot(Ab[row, row+1:n], x[row+1:n])
         x[row] = (Ab[row, -1] - s) / Ab[row, row]
-        # Print the intermediate solution vector x after each iteration
+
         print(f"Iteration for row {row}: x = {x}")
     
     print("Nghiệm duy nhất:")
@@ -79,10 +104,9 @@ def gauss_elimination_check(A, b, tol=1e-10):
         "Ab": Ab
     }
 
-A = [[2, 3, -5, 8],
-     [3, -2, 1, 5],
-     [1, -18, 23, -17],
-     [8, -1, -3, 18]]
-b = [4, 2, -10, 8]
+# Đọc ma trận từ file
+filename = 'matrix.txt'
+A, b = read_matrix_from_file(filename)
 
+# Giải hệ phương trình
 gauss_elimination_check(A, b)
