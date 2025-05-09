@@ -11,16 +11,16 @@ def read_matrix_from_file(filename):
     # Đọc ma trận A
     A = np.array([list(map(float, line.split())) for line in lines[:separator_index]])
 
-    # Đọc vector b
-    b = np.array([float(line.strip()) for line in lines[separator_index + 1:]])
+    # Đọc vector B
+    B = np.array([list(map(float, line.split())) for line in lines[separator_index + 1:]])
 
-    return A, b
+    return A, B
 
-def gauss_elimination_check(A, b, tol=1e-10):
+def gauss_elimination_check(A, B, tol=1e-10):
     A = np.array(A, dtype=float)
-    b = np.array(b, dtype=float).reshape(-1, 1)
+    B = np.array(B, dtype=float)
     m, n = A.shape
-    Ab = np.hstack([A, b])  # Ma trận mở rộng
+    Ab = np.hstack([A, B])
     pivot_columns = []
 
     print("Ma trận mở rộng ban đầu:")
@@ -28,85 +28,63 @@ def gauss_elimination_check(A, b, tol=1e-10):
     print("-" * 50)
 
     for i in range(min(m, n)):
-        # Kiểm tra và hoán đổi hàng nếu cần
+        # Kiểm tra pivot, không hoán đổi hàng
         if abs(Ab[i, i]) < tol:
-            for t in range(i + 1, m):
-                if abs(Ab[t, i]) > tol:
-                    Ab[[i, t]] = Ab[[t, i]]
-                    print(f"Hoán đổi hàng {i} và hàng {t}:")
-                    print(Ab)
-                    print("-" * 50)
-                    break
-        if abs(Ab[i, i]) < tol:
+            print(f"Pivot tại [{i}, {i}] quá nhỏ ({Ab[i, i]}), bỏ qua cột {i}.")
             continue
 
         pivot_columns.append(i)
 
-        # Khử các phần tử bên dưới phần tử chốt
+        # Khử các phần tử bên dưới pivot
         for j in range(i + 1, m):
-            factor = Ab[j, i] / Ab[i, i]
-            Ab[j, i:] -= factor * Ab[i, i:]
-            print(f"Khử hàng {j} bằng hàng {i} với hệ số {factor:.6f}:")
-            print(Ab)
-            print("-" * 50)
+            if abs(Ab[j, i]) > tol:  # Chỉ khử nếu phần tử không quá nhỏ
+                factor = Ab[j, i] / Ab[i, i]
+                Ab[j, i:] -= factor * Ab[i, i:]
+                print(f"Khử hàng {j} bằng hàng {i} với hệ số {factor:.6f}:")
+                print(Ab)
+                print("-" * 50)
 
     # Kiểm tra vô nghiệm
     for i in range(m):
-        if np.all(np.abs(Ab[i, :-1]) < tol) and abs(Ab[i, -1]) > tol:
+        if np.all(np.abs(Ab[i, :-B.shape[1]]) < tol) and np.any(np.abs(Ab[i, -B.shape[1]:]) > tol):
             print("Hệ phương trình vô nghiệm.")
             return {
                 "type": "inconsistent",
-                "pivot_columns": pivot_columns,
                 "Ab": Ab
             }
 
     # Kiểm tra vô số nghiệm
-    if len(pivot_columns) < n:
+    rank = len(pivot_columns)
+    if rank < n:
         print("Hệ có vô số nghiệm.")
-        aug = Matrix(np.hstack([A, b]).tolist())
-        vars = symbols(f'x1:{n+1}')
-        sol = solve_linear_system(aug, *vars)
-
-        print("Nghiệm tổng quát:")
-        if sol:
-            for var, expr in sol.items():
-                print(f"{var} = {expr}")
-        else:
-            print("Các biến tự do (free variables):")
-            free_vars = [var for var in vars if var not in sol]
-            for var in free_vars:
-                print(f"{var} = tự do")
-
         return {
             "type": "infinite",
-            "pivot_columns": pivot_columns,
-            "general_solution": sol,
             "Ab": Ab
         }
-
-    # Hệ có nghiệm duy nhất → giải bằng thế ngược
-    x = np.zeros(n)
-    print("Back substitution steps:")
-    for i in reversed(range(len(pivot_columns))):
-        row = pivot_columns[i]
-        s = np.dot(Ab[row, row+1:n], x[row+1:n])
-        x[row] = (Ab[row, -1] - s) / Ab[row, row]
-
-        print(f"Iteration for row {row}: x = {x}")
     
-    print("Nghiệm duy nhất:")
-    print(x)
+    def back_substitution(Ab, m, n):
+        num_b_columns = Ab.shape[1] - n
+        X = np.zeros((n, num_b_columns))
+        for k in range(num_b_columns):
+            for i in range(n - 1, -1, -1):
+                if i in pivot_columns:
+                    pivot_idx = pivot_columns.index(i)
+                    X[i, k] = (Ab[pivot_idx, n + k] - np.dot(Ab[pivot_idx, i + 1:n], X[i + 1:, k])) / Ab[pivot_idx, i]
+        return X
+
+    X = back_substitution(Ab, m, n)
+    print("Nghiệm duy nhất cho từng cột của B:")
+    print(X)
 
     return {
         "type": "unique",
-        "pivot_columns": pivot_columns,
-        "solution": x,
+        "solution": X,
         "Ab": Ab
     }
 
 # Đọc ma trận từ file
 filename = 'matrix.txt'
-A, b = read_matrix_from_file(filename)
+A, B = read_matrix_from_file(filename)
 
 # Giải hệ phương trình
-gauss_elimination_check(A, b)
+gauss_elimination_check(A, B)

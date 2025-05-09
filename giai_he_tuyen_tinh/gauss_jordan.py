@@ -1,4 +1,5 @@
 import numpy as np
+from sympy import Matrix, symbols, solve_linear_system
 
 def read_matrix_from_file(filename):
     with open(filename, 'r') as f:
@@ -10,62 +11,77 @@ def read_matrix_from_file(filename):
     # Đọc ma trận A
     A = np.array([list(map(float, line.split())) for line in lines[:separator_index]])
 
-    # Đọc vector b
-    b = np.array([float(line.strip()) for line in lines[separator_index + 1:]])
+    # Đọc vector B
+    B = np.array([list(map(float, line.split())) for line in lines[separator_index + 1:]])
 
-    return A, b
+    return A, B
 
-def gauss_jordan_elimination(A, b, tol=1e-10):
+def gauss_elimination_check(A, B, tol=1e-10):
     A = np.array(A, dtype=float)
-    b = np.array(b, dtype=float).reshape(-1, 1)
+    B = np.array(B, dtype=float)
     m, n = A.shape
-    Ab = np.hstack([A, b])  # Ma trận mở rộng
+    Ab = np.hstack([A, B])
+    pivot_columns = []
 
     print("Ma trận mở rộng ban đầu:")
     print(Ab)
     print("-" * 50)
 
-    for i in range(min(m, n)):
-        # Tìm pivot ưu tiên trị tuyệt đối bằng 1
-        pivot_row = i
-        for t in range(i, m):
-            if abs(Ab[t, i] - 1) < tol:  # Ưu tiên trị tuyệt đối bằng 1
-                pivot_row = t
+    row = 0
+    for col in range(n):
+        if row >= m:
+            break
+
+        # Tìm pivot: ưu tiên |pivot| = 1, nếu không có thì chọn giá trị tuyệt đối lớn nhất
+        pivot_row = row
+        pivot_value = abs(Ab[row, col])
+        has_one = abs(Ab[row, col]) == 1.0
+
+        for j in range(row + 1, m):
+            abs_val = abs(Ab[j, col])
+            if abs_val == 1.0:
+                pivot_row = j
+                pivot_value = abs_val
+                has_one = True
                 break
-        else:
-            # Nếu không có pivot trị tuyệt đối bằng 1, chọn phần tử lớn nhất
-            pivot_row = np.argmax(np.abs(Ab[i:, i])) + i
+            elif not has_one and abs_val > pivot_value:
+                pivot_row = j
+                pivot_value = abs_val
+
+        if pivot_value < tol:
+            print(f"Pivot tại cột {col} quá nhỏ ({Ab[row, col]}), bỏ qua cột {col}.")
+            continue
 
         # Hoán đổi hàng nếu cần
-        if pivot_row != i:
-            Ab[[i, pivot_row]] = Ab[[pivot_row, i]]
-            print(f"Hoán đổi hàng {i} và hàng {pivot_row}:")
+        if pivot_row != row:
+            Ab[[row, pivot_row]] = Ab[[pivot_row, row]]
+            print(f"Hoán đổi hàng {row} và hàng {pivot_row}:")
             print(Ab)
             print("-" * 50)
 
-        # Kiểm tra nếu pivot quá nhỏ (gần 0)
-        if abs(Ab[i, i]) < tol:
-            continue
+        pivot_columns.append(col)
 
-        # Chuẩn hóa hàng hiện tại (pivot = 1)
-        pivot = Ab[i, i]
-        Ab[i, i:] /= pivot
-        print(f"Chuẩn hóa hàng {i} (pivot = {pivot:.6f}):")
+        # Chuẩn hóa pivot về 1
+        pivot = Ab[row, col]
+        Ab[row, :] /= pivot
+        print(f"Chuẩn hóa hàng {row} để pivot = 1:")
         print(Ab)
         print("-" * 50)
 
-        # Khử các phần tử khác trong cột hiện tại
+        # Khử tất cả các phần tử khác trong cột col
         for j in range(m):
-            if j != i:
-                factor = Ab[j, i]
-                Ab[j, i:] -= factor * Ab[i, i:]
-                print(f"Khử hàng {j} bằng hàng {i} với hệ số {factor:.6f}:")
+            if j != row and abs(Ab[j, col]) > tol:
+                factor = Ab[j, col]
+                Ab[j, :] -= factor * Ab[row, :]
+                print(f"Khử hàng {j} bằng hàng {row} với hệ số {factor:.6f}:")
                 print(Ab)
                 print("-" * 50)
 
+        row += 1
+
     # Kiểm tra vô nghiệm
     for i in range(m):
-        if np.all(np.abs(Ab[i, :-1]) < tol) and abs(Ab[i, -1]) > tol:
+        if np.all(np.abs(Ab[i, :-B.shape[1]]) < tol) and np.any(np.abs(Ab[i, -B.shape[1]:]) > tol):
             print("Hệ phương trình vô nghiệm.")
             return {
                 "type": "inconsistent",
@@ -73,7 +89,7 @@ def gauss_jordan_elimination(A, b, tol=1e-10):
             }
 
     # Kiểm tra vô số nghiệm
-    rank = np.linalg.matrix_rank(Ab[:, :-1])
+    rank = len(pivot_columns)
     if rank < n:
         print("Hệ có vô số nghiệm.")
         return {
@@ -81,20 +97,29 @@ def gauss_jordan_elimination(A, b, tol=1e-10):
             "Ab": Ab
         }
 
-    # Hệ có nghiệm duy nhất
-    x = Ab[:, -1]
-    print("Nghiệm duy nhất:")
-    print(x)
+    def back_substitution(Ab, m, n):
+        num_b_columns = Ab.shape[1] - n
+        X = np.zeros((n, num_b_columns))
+        for k in range(num_b_columns):
+            for i in range(n):
+                if i in pivot_columns:
+                    pivot_idx = pivot_columns.index(i)
+                    X[i, k] = Ab[pivot_idx, n + k]
+        return X
+
+    X = back_substitution(Ab, m, n)
+    print("Nghiệm duy nhất cho từng cột của B:")
+    print(X)
 
     return {
         "type": "unique",
-        "solution": x,
+        "solution": X,
         "Ab": Ab
     }
 
 # Đọc ma trận từ file
 filename = 'matrix.txt'
-A, b = read_matrix_from_file(filename)
+A, B = read_matrix_from_file(filename)
 
-# Giải hệ phương trình bằng Gauss-Jordan
-gauss_jordan_elimination(A, b)
+# Giải hệ phương trình
+gauss_elimination_check(A, B)
