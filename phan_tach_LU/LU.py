@@ -110,9 +110,9 @@ try:
     L, U = lu_decomposition_crout(A)
     print("\nKết quả cuối cùng:")
     print("Ma trận L:")
-    print(L)
+    print(np.round(L, 5))
     print("Ma trận U:")
-    print(U)
+    print(np.round(U,5))
 
     # Kiểm tra kết quả
     check_lu_decomposition(A, L, U)
