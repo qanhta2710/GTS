@@ -34,20 +34,20 @@ def cholesky_decomposition(A):
             raise ValueError("Ma trận không dương xác định")
         U[i, i] = np.sqrt(A[i, i] - sum_squares)
         print(f"  - U[{i+1},{i+1}] = sqrt(A[{i+1},{i+1}] - sum(U[k,{i+1}]^2))")
-        print(f"             = sqrt({A[i, i]} - {sum_squares})")
-        print(f"             = {U[i, i]}")
+        print(f"             = sqrt({A[i, i]:.5f} - {sum_squares:.5f})")
+        print(f"             = {U[i, i]:.5f}")
         
         # Tính các phần tử bên phải đường chéo U_ij
         for j in range(i + 1, n):
             sum_products = sum(U[k, i] * U[k, j] for k in range(i))
             U[i, j] = (A[i, j] - sum_products) / U[i, i]
             print(f"  - U[{i+1},{j+1}] = (A[{i+1},{j+1}] - sum(U[k,{i+1}] * U[k,{j+1}])) / U[{i+1},{i+1}]")
-            print(f"             = ({A[i, j]} - {sum_products}) / {U[i, i]}")
-            print(f"             = {U[i, j]}")
+            print(f"             = ({A[i, j]:.5f} - {sum_products:.5f}) / {U[i, i]:.5f}")
+            print(f"             = {U[i, j]:.5f}")
         
         # In ma trận U hiện tại
         print("\n  Ma trận U sau khi tính hàng", i+1, ":")
-        print(U)
+        print(np.round(U, 5))
     
     return U
 
@@ -72,12 +72,12 @@ def main():
     try:
         U = cholesky_decomposition(A)
         print("\nMa trận U cuối cùng:")
-        print(U)
+        print(np.round(U, 5))
         
         # Kiểm tra kết quả: A = U^T * U
         A_reconstructed = np.dot(U.T, U)
         print("\nKiểm tra U^T * U:")
-        print(A_reconstructed)
+        print(np.round(A_reconstructed, 5))
         
         # So sánh với ma trận gốc
         if np.allclose(A, A_reconstructed, rtol=1e-5, atol=1e-8):

@@ -1,32 +1,19 @@
 import numpy as np
 
-def read_input_from_file(file_path):
-    """Đọc ma trận A và B từ file .txt"""
+def read_A_B_from_file(file_path):
+    """Đọc ma trận A (n x n) và vector B (n x 1) từ file."""
     try:
         with open(file_path, 'r') as file:
-            lines = file.readlines()
-        
-        A_lines = []
-        B_lines = []
-        is_B = False
+            lines = [line.strip() for line in file if line.strip()]
+        n = 0
+        # Đếm số dòng đầu có nhiều hơn 1 số (ma trận A)
         for line in lines:
-            line = line.strip()
-            if line == "":
-                is_B = True
-                continue
-            if not is_B:
-                A_lines.append([float(x) for x in line.split()])
+            if len(line.split()) > 1:
+                n += 1
             else:
-                B_lines.append([float(x) for x in line.split()])
-        
-        A = np.array(A_lines)
-        B = np.array(B_lines)
-        
-        if A.shape[0] != A.shape[1]:
-            raise ValueError("Ma trận A không vuông")
-        if B.shape[0] != A.shape[0]:
-            raise ValueError("Kích thước B không phù hợp với A")
-        
+                break
+        A = np.array([list(map(float, lines[i].split())) for i in range(n)])
+        B = np.array([float(lines[i]) for i in range(n, n*2)])
         return A, B
     except Exception as e:
         print(f"Lỗi khi đọc file: {e}")
@@ -63,7 +50,7 @@ def solve_cholesky_detailed(A, B):
     # Phân tách Cholesky
     U = cholesky_decomposition(A)
     print("\nMa trận U:")
-    print(U)
+    print(np.round(U, 5))
     
     n, m = B.shape
     Y = np.zeros((n, m))
@@ -77,8 +64,8 @@ def solve_cholesky_detailed(A, B):
             sum_terms = sum(U[j, i] * Y[j, k] for j in range(i))
             Y[i, k] = (B[i, k] - sum_terms) / U[i, i]
             print(f"  y[{i+1},{k+1}] = (b[{i+1},{k+1}] - sum(u[j,{i+1}] * y[j,{k+1}])) / u[{i+1},{i+1}]")
-            print(f"             = ({B[i, k]} - {sum_terms}) / {U[i, i]} = {Y[i, k]:.6f}")
-        print(f"Cột {k+1} của Y: {Y[:, k]}")
+            print(f"             = ({B[i, k]:.5f} - {sum_terms:.5f}) / {U[i, i]:.5f} = {Y[i, k]:.5f}")
+    print(f"Cột {k+1} của Y: {np.round(Y[:, k], 5)}")
     
     # Giải U X = Y (giải ngược)
     print("\nGiải U X = Y (giải ngược):")
@@ -98,7 +85,9 @@ def main():
     file_path = "matrix.txt"
     
     # Đọc ma trận A và B
-    A, B = read_input_from_file(file_path)
+    A, B = read_A_B_from_file('matrix.txt')
+    if B.ndim == 1:
+        B = B.reshape(-1, 1)
     if A is None or B is None:
         return
     
@@ -119,7 +108,7 @@ def main():
     try:
         X = solve_cholesky_detailed(A, B)
         print("\nMa trận nghiệm X:")
-        print(X)
+        print(np.round(X, 5))
         
         # Kiểm tra kết quả
         AX = np.dot(A, X)
