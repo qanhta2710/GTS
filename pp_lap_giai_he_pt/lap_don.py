@@ -103,7 +103,7 @@ if __name__ == "__main__":
         print(f"Không tìm thấy file {file_path}.")
         exit(1)
     
-    epsilon = 1e-6
+    epsilon = 1e-4
     m = B.shape[1]
     x0 = np.zeros(m)
     
