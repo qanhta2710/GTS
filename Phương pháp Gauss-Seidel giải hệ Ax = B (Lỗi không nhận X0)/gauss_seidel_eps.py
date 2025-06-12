@@ -200,18 +200,9 @@ def gauss_seidel(A, B, epsilon, X0=None, max_iterations=1000):
 # Ví dụ sử dụng
 if __name__ == "__main__":
     file_path = "input.txt"
-    try:
-        A, B, X0 = read_input(file_path)
-    except FileNotFoundError:
-        print("File input.txt không tồn tại. Sử dụng dữ liệu mẫu.")
-        A = np.array([[4, 1, 1],
-                      [1, 5, 2],
-                      [1, 2, 6]], dtype=float)
-        B = np.array([[8, 9],
-                      [13, 14],
-                      [15, 16]], dtype=float)
-        X0 = None
-    
+
+    A, B, X0 = read_input(file_path)
+
     epsilon = 1e-6
     
     # Gọi hàm Gauss-Seidel
