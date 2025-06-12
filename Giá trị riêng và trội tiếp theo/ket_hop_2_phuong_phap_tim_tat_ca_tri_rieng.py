@@ -2,13 +2,18 @@ import numpy as np
 import math
 
 def power_method(A, Y, E, max_iter=200):
+    np.set_printoptions(precision=6, suppress=True)
     B = [Y.copy()]
     for m in range(1, max_iter + 1):
         Z = np.dot(A, B[-1])
+        print(f"\nBước lặp {m}:")
+        print("  A * B[m-1] =", np.round(Z, 6))
         maxi = np.max(np.abs(Z))
         if maxi == 0:
             return None, None, "Vector Z bằng 0"
         B.append(Z / maxi)
+        print("  B[m] (chuẩn hóa) =", np.round(B[-1], 6))
+        print("  Sai số max |F| =", round(np.max(np.abs(B[-1] - B[-2])), 6))
         if np.max(np.abs(B[-1] - B[-2])) <= E or np.max(np.abs(B[-1] + B[-2])) <= E:
             v = B[-1]
             lambda_val = np.dot(v.T, np.dot(A, v)) / np.dot(v.T, v)
@@ -19,6 +24,12 @@ def complex_eigen(A, Y, max_iter=200):
     """
     Xử lý trường hợp trị riêng phức bằng phương trình đặc trưng bậc hai.
     """
+    np.set_printoptions(precision=6, suppress=True)
+    print("\nGiải phương trình đặc trưng bậc hai từ 3 vector cuối:")
+    print("  Am1Y =", np.round(Am1Y, 6))
+    print("  AmY  =", np.round(AmY, 6))
+    print("  M    =", np.round(M, 6))
+
     B = [Y.copy()]
     for _ in range(max_iter):
         Z = np.dot(A, B[-1])
@@ -56,6 +67,14 @@ def complex_eigen(A, Y, max_iter=200):
         real_part = -b / (2 * a)
         lambda_1 = complex(real_part, sqrt_delta)
         lambda_2 = complex(real_part, -sqrt_delta)
+    print(f"\n  Phương trình đặc trưng: λ² + ({round(b, 6)})λ + ({round(c, 6)}) = 0")
+    if delta >= 0:
+        print("  Δ =", round(delta, 6), "→ nghiệm thực")
+    else:
+        print("  Δ =", round(delta, 6), "→ nghiệm phức")
+
+    print("  Trị riêng 1:", lambda_1)
+    print("  Trị riêng 2:", lambda_2)
 
     for lam in [lambda_1, lambda_2]:
         v = Am1Y - lam * AmY
@@ -67,11 +86,15 @@ def complex_eigen(A, Y, max_iter=200):
     return eigenvalues, eigenvectors, msg
 
 def deflation(A, lambda_1, X_1):
+    np.set_printoptions(precision=6, suppress=True)
     norm = np.linalg.norm(X_1)
     if norm == 0:
         return None, "X_1 = 0"
     X_1 = X_1 / norm
     A_prime = A - lambda_1 * np.outer(X_1, X_1)
+    print(f"  Thực hiện triệt tiêu với λ = {round(lambda_1, 6)}")
+    print("  Vector X chuẩn hóa:", np.round(X_1, 6))
+    print("  Ma trận A' mới sau triệt tiêu:\n", np.round(A_prime, 6))
     return A_prime, "Ma trận mới A' tính thành công"
 
 def main(A, Y, E, max_iter):
@@ -111,6 +134,7 @@ def main(A, Y, E, max_iter):
         print("  Ma trận mới A':\n", A_curr)
         
         Y_curr = np.random.rand(n)
+        print(f"  Vector Y mới cho lần tiếp theo: {np.round(Y_curr, 6)}")
         i += 1
 
     return eigenvalues, eigenvectors, "Hoàn thành"
