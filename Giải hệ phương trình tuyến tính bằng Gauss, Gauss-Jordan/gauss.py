@@ -88,3 +88,6 @@ A, B = read_matrix_from_file(filename)
 
 # Giải hệ phương trình
 gauss_elimination_check(A, B)
+X = np.linalg.solve(A, B)
+print("Kiểm tra:")
+print(X)

@@ -59,24 +59,24 @@ def lu_decomposition_crout(A, tol=1e-10):
         for i in range(t, n):
             sum_lu = sum(L[i, j] * U[j, t] for j in range(t))
             L[i, t] = A[i, t] - sum_lu
-            print(f"    l_{i}{t} = a_{i}{t} - sum(l_{i}j * u_j{t}) = {A[i, t]} - {sum_lu} = {L[i, t]}")
+            print(f"    l_{i}{t} = a_{i}{t} - sum(l_{i}j * u_j{t}) = {A[i, t]:.5f} - {sum_lu:.5f} = {L[i, t]:.5f}")
 
         # Kiểm tra l_tt != 0
         if abs(L[t, t]) < tol:
-            raise ValueError(f"Phân tách thất bại: l_{t}{t} = {L[t, t]} quá nhỏ")
+            raise ValueError(f"Phân tách thất bại: l_{t}{t} = {L[t, t]:.5f} quá nhỏ")
 
         # Tính hàng t của U (k >= t+1, vì u_tt = 1)
         print(f"  Tính hàng {t} của U:")
         for k in range(t + 1, n):
             sum_lu = sum(L[t, j] * U[j, k] for j in range(t))
             U[t, k] = (A[t, k] - sum_lu) / L[t, t]
-            print(f"    u_{t}{k} = (a_{t}{k} - sum(l_{t}j * u_j{k})) / l_{t}{t} = ({A[t, k]} - {sum_lu}) / {L[t, t]} = {U[t, k]}")
+            print(f"    u_{t}{k} = (a_{t}{k} - sum(l_{t}j * u_j{k})) / l_{t}{t} = ({A[t, k]} - {sum_lu:.5f}) / {L[t, t]:.5f} = {U[t, k]:.5f}")
 
         # In trạng thái L và U
         print(f"  Ma trận L sau bước {t}:")
-        print(L)
+        print(np.round(L, 5))
         print(f"  Ma trận U sau bước {t}:")
-        print(U)
+        print(np.round(U, 5))
         print("-" * 50)
 
     return L, U

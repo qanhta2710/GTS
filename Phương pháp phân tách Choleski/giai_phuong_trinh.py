@@ -1,23 +1,33 @@
 import numpy as np
 
-def read_A_B_from_file(file_path):
-    """Đọc ma trận A (n x n) và vector B (n x 1) từ file."""
+def read_A_B_from_file_with_separator(file_path):
+    """
+    Đọc ma trận A và vector/matrix B từ file có chứa dấu phân cách '---'.
+    A là ma trận vuông n x n, B có thể là vector (n,) hoặc ma trận (n x m).
+    """
     try:
         with open(file_path, 'r') as file:
             lines = [line.strip() for line in file if line.strip()]
-        n = 0
-        # Đếm số dòng đầu có nhiều hơn 1 số (ma trận A)
-        for line in lines:
-            if len(line.split()) > 1:
-                n += 1
-            else:
-                break
-        A = np.array([list(map(float, lines[i].split())) for i in range(n)])
-        B = np.array([float(lines[i]) for i in range(n, n*2)])
+
+        if '---' not in lines:
+            raise ValueError("Không tìm thấy dòng phân cách '---'")
+
+        sep_index = lines.index('---')
+        A_lines = lines[:sep_index]
+        B_lines = lines[sep_index + 1:]
+
+        A = np.array([list(map(float, row.split())) for row in A_lines])
+        B = np.array([list(map(float, row.split())) for row in B_lines])
+
+        if B.ndim == 1:
+            B = B.reshape(-1, 1)
+
         return A, B
+
     except Exception as e:
         print(f"Lỗi khi đọc file: {e}")
         return None, None
+
 
 def is_symmetric(A):
     """Kiểm tra ma trận A có đối xứng không"""
@@ -70,13 +80,12 @@ def solve_cholesky_detailed(A, B):
     # Giải U X = Y (giải ngược)
     print("\nGiải U X = Y (giải ngược):")
     for k in range(m):
-        print(f"\nCột {k+1} của Y: {Y[:, k]}")
         for i in range(n-1, -1, -1):
             sum_terms = sum(U[i, j] * X[j, k] for j in range(i+1, n))
             X[i, k] = (Y[i, k] - sum_terms) / U[i, i]
             print(f"  x[{i+1},{k+1}] = (y[{i+1},{k+1}] - sum(u[{i+1},j] * x[j,{k+1}])) / u[{i+1},{i+1}]")
-            print(f"             = ({Y[i, k]} - {sum_terms}) / {U[i, i]} = {X[i, k]:.6f}")
-        print(f"Cột {k+1} của X: {X[:, k]}")
+            print(f"             = ({Y[i, k]:.5f} - {sum_terms:.5f}) / {U[i, i]:.5f} = {X[i, k]:.5f}")
+        print(f"Cột {k+1} của X: {np.round(X[:, k], 5)}")
     
     return X
 
@@ -85,7 +94,7 @@ def main():
     file_path = "matrix.txt"
     
     # Đọc ma trận A và B
-    A, B = read_A_B_from_file('matrix.txt')
+    A, B = read_A_B_from_file_with_separator('matrix.txt')
     if B.ndim == 1:
         B = B.reshape(-1, 1)
     if A is None or B is None:

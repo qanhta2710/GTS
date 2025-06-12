@@ -60,7 +60,7 @@ def lu_decomposition_crout(A, tol=1e-10):
         for i in range(t, n):
             sum_lu = sum(L[i, j] * U[j, t] for j in range(t))
             L[i, t] = A[i, t] - sum_lu
-            print(f"    l_{i}{t} = a_{i}{t} - sum(l_{i}j * u_j{t}) = {A[i, t]} - {sum_lu} = {L[i, t]}")
+            print(f"    l_{i}{t} = a_{i}{t} - sum(l_{i}j * u_j{t}) = {A[i, t]:.5f} - {sum_lu:.5f} = {L[i, t]:.5f}")
 
         # Kiểm tra l_tt != 0
         if abs(L[t, t]) < tol:
@@ -71,13 +71,13 @@ def lu_decomposition_crout(A, tol=1e-10):
         for k in range(t + 1, n):
             sum_lu = sum(L[t, j] * U[j, k] for j in range(t))
             U[t, k] = (A[t, k] - sum_lu) / L[t, t]
-            print(f"    u_{t}{k} = (a_{t}{k} - sum(l_{t}j * u_j{k})) / l_{t}{t} = ({A[t, k]} - {sum_lu}) / {L[t, t]} = {U[t, k]}")
+            print(f"    u_{t}{k} = (a_{t}{k} - sum(l_{t}j * u_j{k})) / l_{t}{t} = ({A[t, k]:.5f} - {sum_lu:.5f}) / {L[t, t]:.5f} = {U[t, k]:.5f}")
 
         # In trạng thái L và U
         print(f"  Ma trận L sau bước {t}:")
-        print(L)
+        print(np.round(L, 5))
         print(f"  Ma trận U sau bước {t}:")
-        print(U)
+        print(np.round(U, 5))
         print("-" * 50)
 
     return L, U
@@ -105,9 +105,9 @@ def solve_lu_crout(L, U, B, tol=1e-10):
         for i in range(n):
             sum_ly = sum(L[i, j] * Y[j, k] for j in range(i))
             Y[i, k] = (B[i, k] - sum_ly) / L[i, i]
-            print(f"    y_{i}{k} = (b_{i}{k} - sum(l_{i}j * y_j{k})) / l_{i}{i} = ({B[i, k]} - {sum_ly}) / {L[i, i]} = {Y[i, k]}")
+            print(f"    y_{i}{k} = (b_{i}{k} - sum(l_{i}j * y_j{k})) / l_{i}{i} = ({B[i, k]:.5f} - {sum_ly:.5f}) / {L[i, i]:.5f} = {Y[i, k]:.5f}")
     print("Ma trận Y:")
-    print(Y)
+    print(np.round(Y, 5))
     print("-" * 50)
 
     # Thế ngược: UX = Y
@@ -117,9 +117,9 @@ def solve_lu_crout(L, U, B, tol=1e-10):
         for i in range(n-1, -1, -1):
             sum_ux = sum(U[i, j] * X[j, k] for j in range(i+1, n))
             X[i, k] = Y[i, k] - sum_ux
-            print(f"    x_{i}{k} = y_{i}{k} - sum(u_{i}j * x_j{k}) = {Y[i, k]} - {sum_ux} = {X[i, k]}")
+            print(f"    x_{i}{k} = y_{i}{k} - sum(u_{i}j * x_j{k}) = {Y[i, k]:.5f} - {sum_ux:.5f} = {X[i, k]:.5f}")
     print("Ma trận X:")
-    print(X)
+    print(np.round(X, 5))
     print("-" * 50)
 
     return X

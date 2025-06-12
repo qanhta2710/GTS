@@ -1,21 +1,28 @@
 import numpy as np
 
-def read_matrix_from_file(file_path):
-    """Đọc ma trận từ file .txt"""
-    try:
-        matrix = []
-        with open(file_path, 'r') as file:
-            for line in file:
-                row = [float(x) for x in line.strip().split()]
-                matrix.append(row)
-        matrix = np.array(matrix)
-        # Kiểm tra ma trận có vuông không
-        if matrix.shape[0] != matrix.shape[1]:
-            raise ValueError("Ma trận không vuông")
-        return matrix
-    except Exception as e:
-        print(f"Lỗi khi đọc file: {e}")
-        return None
+def read_matrix_from_file(filename):
+    """
+    Đọc ma trận A từ file (dùng cho phân tách LU).
+    File có dạng: ma trận A, sau đó là dòng chứa '---', rồi vector B.
+    Chỉ trả về A.
+    """
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+
+    # Tìm dòng phân cách chứa '---'
+    separator_index = None
+    for i, line in enumerate(lines):
+        if '---' in line:
+            separator_index = i
+            break
+
+    if separator_index is None:
+        raise ValueError("Không tìm thấy dòng phân cách '---'")
+
+    # Đọc và chuyển đổi các dòng phía trước '---' thành ma trận A
+    A = np.array([list(map(float, line.strip().split())) for line in lines[:separator_index]])
+    return A
+
 
 def is_symmetric(matrix):
     return np.array_equal(matrix, matrix.T)
