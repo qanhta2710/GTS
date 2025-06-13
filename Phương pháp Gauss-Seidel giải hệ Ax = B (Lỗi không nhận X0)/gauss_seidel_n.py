@@ -24,33 +24,40 @@ def read_input(file_path):
     """Đọc ma trận A, B và tùy chọn X0 từ file."""
     with open(file_path, 'r') as f:
         lines = [line.strip().split() for line in f if line.strip()]
-    
+
     # Đọc n và m
-    n, m = map(int, lines[0])
-    
+    if len(lines) < 1 or len(lines[0]) < 2:
+        raise ValueError("File phải bắt đầu bằng dòng chứa n và m")
+    n, m = int(lines[0][0]), int(lines[0][1])
+
+    expected_lines = 1 + 2 * n
+    if len(lines) < expected_lines:
+        raise ValueError("Không đủ dòng để đọc ma trận A và B")
+
     # Đọc ma trận A (n dòng)
-    A = np.array([list(map(float, lines[i])) for i in range(1, n + 1)])
-    
+    A = np.array([list(map(float, lines[i])) for i in range(1, 1 + n)])
+    if A.shape != (n, n):
+        raise ValueError(f"Ma trận A phải có kích thước ({n}, {n})")
+
     # Đọc ma trận B (n dòng)
-    B = np.array([list(map(float, lines[i])) for i in range(n + 1, 2 * n + 1)])
-    
-    # Kiểm tra kích thước
-    if A.shape != (n, n) or B.shape != (n, m):
-        raise ValueError("Kích thước ma trận không khớp với n, m")
-    
+    B = np.array([list(map(float, lines[i])) for i in range(1 + n, 1 + 2 * n)])
+    if B.shape != (n, m):
+        raise ValueError(f"Ma trận B phải có kích thước ({n}, {m})")
+
     # Kiểm tra và đọc X0 nếu có
     X0 = None
-    if len(lines) >= 2 * n + 1 + n:
+    if len(lines) >= 1 + 3 * n:
         try:
-            X0 = np.array([list(map(float, lines[i])) for i in range(2 * n + 1, 3 * n + 1)])
+            X0 = np.array([list(map(float, lines[i])) for i in range(1 + 2 * n, 1 + 3 * n)])
             if X0.shape != (n, m):
                 print("Kích thước X0 không khớp, gán X0 = 0")
                 X0 = None
-        except:
-            print("Không đọc được X0 từ file, gán X0 = 0")
+        except Exception as e:
+            print(f"Không đọc được X0 từ file, gán X0 = 0. Lỗi: {e}")
             X0 = None
-    
+
     return A, B, X0
+
 
 def gauss_seidel_fixed_iterations(A, B, num_steps, X0=None):
     """
@@ -124,13 +131,15 @@ def gauss_seidel_fixed_iterations(A, B, num_steps, X0=None):
 if __name__ == "__main__":
     file_path = "input.txt"
 
+    # Đọc A, B, X0 từ file
     A, B, X0 = read_input(file_path)
 
-    num_steps = 5
-    
+    # Nhập số bước lặp từ người dùng (ở đây gán trực tiếp trong code)
+    num_steps = 5  # Bạn có thể thay đổi con số này khi chạy
+
     # Gọi hàm Gauss-Seidel
-    solution = gauss_seidel_fixed_iterations(A, B, num_steps, X0=None)
-    
+    solution = gauss_seidel_fixed_iterations(A, B, num_steps, X0)
+
     # In nghiệm cuối cùng
     print("\nFinal Solution:")
     np.set_printoptions(formatter={'float': '{:.5f}'.format})
