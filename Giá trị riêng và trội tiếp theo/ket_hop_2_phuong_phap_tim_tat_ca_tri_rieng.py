@@ -156,7 +156,7 @@ if __name__ == "__main__":
         eigenvalues, eigenvectors, message = main(A, Y, E, max_iter)
 
         print("\nKết quả cuối cùng:")
-        print("Trị riêng:", eigenvalues)
+        print("Trị riêng:", [float(val) for val in eigenvalues])
         print("Vector riêng:")
         for vec in eigenvectors:
             print(vec)
