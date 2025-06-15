@@ -58,8 +58,18 @@ def compute_singular_values(A, Y, E, max_iter):
 
         A_curr, _ = deflation(A_curr, lambda_i, X_i)
         Y_curr = np.random.rand(n)
+    left_singular_vectors = []
+    for i in range(len(singular_values)):
+        sigma = singular_values[i]
+        v = right_singular_vectors[i]
+        if sigma > 0:
+            u = A @ v / sigma
+        else:
+            u = np.zeros(A.shape[0])
+        left_singular_vectors.append(u)
 
-    return singular_values, right_singular_vectors
+
+    return singular_values, right_singular_vectors, left_singular_vectors
 A = np.array([[3, 3, 8, 2],
               [3, 9, 4, 10],
               [7, 10, 6, 9]], dtype=float)
@@ -67,8 +77,13 @@ Y = np.array([1, 1, 1, 1], dtype=float)
 E = 1e-6
 max_iter = 200
 
-singular_values, right_singular_vectors = compute_singular_values(A, Y, E, max_iter)
+singular_values, right_singular_vectors, left_singular_vectors = compute_singular_values(A, Y, E, max_iter)
 print("\n=== Giá trị kỳ dị ===")
 for i, sv in enumerate(singular_values, 1):
     print(f"σ{i} = {sv:.6f}")
-
+print("\n=== Vector kỳ dị trái ===")
+for i, u in enumerate(left_singular_vectors, 1):
+    print(f"u{i} =", np.round(u, 6))
+print("\n=== Vector kỳ dị phải ===")
+for i, v in enumerate(right_singular_vectors, 1):
+    print(f"v{i} =", np.round(v, 6))

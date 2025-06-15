@@ -190,5 +190,5 @@ def findValue(A):
     return sorted(eigenValues)
 	
 if __name__ == '__main__':
-	A = np.array([[1, 2, 3, 4], [2, 1, 2, 3], [3, 2, 1, 2], [4, 3, 2, 1]])
+	A = np.array([[3, 2, -1, 4], [4, -2, 5, 3], [1, 2, 3, 4], [1, -2, 0, 5]])
 	eigenvalues, eigenvectors = Danilevski(A)
